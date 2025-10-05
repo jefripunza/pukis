@@ -268,8 +268,12 @@ app.get("/rooms", (req, res) => {
 });
 
 // Serve the main panel page
-app.use((req, res) => {
+app.use((req, res, next) => {
   let endpoint = req.path;
+  if (endpoint.startsWith("/socket.io")) {
+    next();
+    return;
+  }
   if (endpoint === "/") {
     endpoint = "/index.html";
   }
