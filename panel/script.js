@@ -282,6 +282,7 @@ class PukisClient {
         
         navigator.clipboard.writeText(cookiesText).then(() => {
             this.showCopyToast();
+            alert('✅ Cookies berhasil di copy ke clipboard!');
         }).catch(err => {
             console.error('Failed to copy:', err);
             // Fallback for older browsers
@@ -302,8 +303,10 @@ class PukisClient {
         try {
             document.execCommand('copy');
             this.showCopyToast();
+            alert('✅ Cookies berhasil di copy ke clipboard!');
         } catch (err) {
             console.error('Fallback copy failed:', err);
+            alert('❌ Gagal copy cookies ke clipboard!');
         }
         
         document.body.removeChild(textArea);
@@ -354,11 +357,34 @@ class PukisClient {
         
         navigator.clipboard.writeText(interceptCode).then(() => {
             this.showCopyToast('Intercept code copied to clipboard!');
+            alert('✅ Intercept code berhasil di copy ke clipboard!');
         }).catch(err => {
             console.error('Failed to copy intercept code:', err);
             // Fallback for older browsers
-            this.fallbackCopyTextToClipboard(interceptCode);
+            this.fallbackCopyInterceptCode(interceptCode);
         });
+    }
+
+    fallbackCopyInterceptCode(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            this.showCopyToast('Intercept code copied to clipboard!');
+            alert('✅ Intercept code berhasil di copy ke clipboard!');
+        } catch (err) {
+            console.error('Fallback intercept code copy failed:', err);
+            alert('❌ Gagal copy intercept code ke clipboard!');
+        }
+        
+        document.body.removeChild(textArea);
     }
 
     disconnect() {
