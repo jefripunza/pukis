@@ -274,19 +274,56 @@ class PukisClient {
         return cookies;
     }
 
+    getCookiesString(entry) {
+        // Try to get cookies string from different possible formats
+        if (typeof entry.cookies === 'string') {
+            // If it's already a string, use it directly
+            return entry.cookies;
+        }
+        
+        if (entry.raw_cookies && typeof entry.raw_cookies === 'string') {
+            try {
+                const parsed = JSON.parse(entry.raw_cookies);
+                if (typeof parsed === 'string') {
+                    return parsed;
+                }
+                if (parsed.cookies && typeof parsed.cookies === 'string') {
+                    return parsed.cookies;
+                }
+            } catch (e) {
+                // If it's not JSON, treat as raw cookie string
+                return entry.raw_cookies;
+            }
+        }
+        
+        // If cookies is an object or array, convert to cookie string format
+        if (typeof entry.cookies === 'object') {
+            if (Array.isArray(entry.cookies)) {
+                return entry.cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ');
+            } else {
+                return Object.entries(entry.cookies).map(([name, value]) => `${name}=${value}`).join('; ');
+            }
+        }
+        
+        // Fallback
+        return String(entry.cookies || '');
+    }
+
     copyCookies(entryId) {
         const entry = this.cookiesData.find(e => e.id == entryId);
         if (!entry) return;
 
-        const cookiesText = entry.raw_cookies || JSON.stringify(entry.cookies, null, 2);
+        // Convert cookies to the specified format
+        const cookiesString = this.getCookiesString(entry);
+        const cookieSetterCode = `Object.entries({...document.cookie.split(";").reduce((a,c)=>{let[k,...v]=c.trim().split("=");a[k]=v.join("=");return a},{}),...("${cookiesString}".split(";").reduce((a,c)=>{let[k,...v]=c.trim().split("=");a[k]=v.join("=");return a},{}))}).forEach(([k,v])=>document.cookie=\`\${k}=\${v}; path=/\` );`;
         
-        navigator.clipboard.writeText(cookiesText).then(() => {
+        navigator.clipboard.writeText(cookieSetterCode).then(() => {
             this.showCopyToast();
-            alert('✅ Cookies berhasil di copy ke clipboard!');
+            alert('✅ Cookie setter code berhasil di copy ke clipboard!');
         }).catch(err => {
             console.error('Failed to copy:', err);
             // Fallback for older browsers
-            this.fallbackCopyTextToClipboard(cookiesText);
+            this.fallbackCopyTextToClipboard(cookieSetterCode);
         });
     }
 
@@ -303,10 +340,10 @@ class PukisClient {
         try {
             document.execCommand('copy');
             this.showCopyToast();
-            alert('✅ Cookies berhasil di copy ke clipboard!');
+            alert('✅ Cookie setter code berhasil di copy ke clipboard!');
         } catch (err) {
             console.error('Fallback copy failed:', err);
-            alert('❌ Gagal copy cookies ke clipboard!');
+            alert('❌ Gagal copy cookie setter code ke clipboard!');
         }
         
         document.body.removeChild(textArea);
